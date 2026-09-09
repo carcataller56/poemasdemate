@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Los Poemas de Mateo</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f4f1ea;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #d4c5b9;
+            padding-bottom: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-style: italic;
+            color: #777;
+        }
+        .form-box, .poema-card {
+            background: #ffffff;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        textarea {
+            height: 140px;
+            resize: vertical;
+        }
+        button {
+            background: #4a403a;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background: #2c2c2c;
+        }
+        .poema-card h2 {
+            margin-top: 0;
+            color: #4a403a;
+        }
+        .fecha {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .contenido-poema {
+            white-space: pre-line;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Los Poemas de Mateo</h1>
+        <p class="subtitle">Un espacio autogestionado</p>
+    </header>
+
+    <main>
+        <!-- Formulario para que Mateo escriba desde cualquier dispositivo -->
+        <div class="form-box">
+            <h2>Escribir un nuevo poema</h2>
+            <form id="poemaForm">
+                <input type="text" id="titulo" placeholder="Título del poema" required>
+                <textarea id="contenido" placeholder="Escribe tu poema aquí..." required></textarea>
+                <button type="submit" id="btnPublicar">Publicar Poema</button>
+            </form>
+        </div>
+
+        <!-- Listado donde se cargarán los poemas automáticamente -->
+        <div id="listaPoemas">
+            <p style="text-align: center; color: #777;">Cargando poemas...</p>
+        </div>
+    </main>
+
+    <script>
+        // URL de la aplicación web conectada a tu Google Sheets
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGlz_porSYm8D1xJcxT0u2Jnm1atuZzaSOSgS49BVUeDMrFWEN3ZgXRHY1nQhoqhY/exec";
+
+        const form = document.getElementById('poemaForm');
+        const listaPoemas = document.getElementById('listaPoemas');
+
+        // Cargar poemas al abrir la página
+        async function cargarPoemas() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const poemas = await response.json();
+                
+                if (poemas.length === 0) {
+                    listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primero!</p>';
+                    return;
+                }
+
+                listaPoemas.innerHTML = '';
+                // Mostrar del más nuevo al más viejo invirtiendo el array
+                poemas.reverse().forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'poema-card';
+                    card.innerHTML = `
+                        <h2>${escapeHtml(p.titulo)}</h2>
+                        <span class="fecha">${escapeHtml(p.fecha)}</span>
+                        <div class="contenido-poema">${escapeHtml(p.contenido)}</div>
+                    `;
+                    listaPoemas.appendChild(card);
+                });
+            } catch (error) {
+                listaPoemas.innerHTML = '<p style="text-align: center; color: #c0392b;">Error al conectar con la base de datos.</p>';
+            }
+        }
+
+        // Enviar nuevo poema
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnPublicar');
+            btn.textContent = 'Publicando...';
+            btn.disabled = true;
+
+            const nuevoPoema = {
+                titulo: document.getElementById('titulo').value,
+                contenido: document.getElementById('contenido').value
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(nuevoPoema)
+                });
+                
+                form.reset();
+                btn.textContent = 'Publicar Poema';
+                btn.disabled = false;
+                cargarPoemas(); // Recargar la lista automáticamente
+            } catch (error) {
+                alert('Hubo un error al publicar el poema.');
+                btn.textContent = 'Publicar Poema';
+                btn.disabled = false;
+            }
+        });
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Ejecutar al cargar la página
+        cargarPoemas();
+    </script>
+</body>
+</html>
