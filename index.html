@@ -103,7 +103,6 @@
     </header>
 
     <main>
-        <!-- Formulario para que Mateo escriba -->
         <div class="form-box">
             <h2>Escribir un nuevo poema</h2>
             <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
@@ -115,66 +114,87 @@
             </form>
         </div>
 
-        <!-- Listado donde se cargarán los poemas -->
         <div id="listaPoemas">
-            <p style="text-align: center; color: #777;">Cargando poemas desde Google Sheets...</p>
+            <p style="text-align: center; color: #777;">Cargando poemas...</p>
         </div>
     </main>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec";
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTnj3vbqv2xDFqKhiexLaFf2Hd-z_Cy7e8Er0UDtuLHKDX8xUQjqgGpvZj23dGPd3xyVZuSQQdNDy3r/pub?gid=0&single=true&output=csv";
+
         const listaPoemas = document.getElementById('listaPoemas');
 
-        function cargarPoemas() {
-            // Limpiamos etiquetas script anteriores si existen para evitar acumulación
-            const oldScript = document.getElementById('jsonpScript');
-            if (oldScript) oldScript.remove();
+        async function cargarPoemas() {
+            try {
+                const response = await fetch(CSV_URL + "&t=" + new Date().getTime());
+                const dataText = await response.text();
+                const filas = parseCSV(dataText);
 
-            const scriptTag = document.createElement('script');
-            scriptTag.id = 'jsonpScript';
-            scriptTag.src = SCRIPT_URL + "?callback=mostrarPoemas&t=" + new Date().getTime();
-            document.body.appendChild(scriptTag);
+                if (filas.length === 0 || (filas.length === 1 && !filas[0][1])) {
+                    listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primero!</p>';
+                    return;
+                }
+
+                listaPoemas.innerHTML = '';
+                [...filas].reverse().forEach((p, indexReal) => {
+                    if (!p[1]) return;
+                    const filaRealSheet = filas.length - indexReal + 1;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'poema-card';
+                    card.innerHTML = `
+                        <button class="btn-borrar" onclick="borrarPoema(${filaRealSheet})">Borrar</button>
+                        <h2>${escapeHtml(p[1])}</h2>
+                        <span class="fecha">${escapeHtml(p[0])}</span>
+                        <div class="contenido-poema">${escapeHtml(p[2])}</div>
+                    `;
+                    listaPoemas.appendChild(card);
+                });
+            } catch (error) {
+                listaPoemas.innerHTML = '<p style="text-align: center; color: #c0392b;">Error al conectar con la base de datos.</p>';
+            }
         }
 
-        function mostrarPoemas(poemas) {
-            if (!poemas || poemas.length === 0) {
-                listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primero!</p>';
-                return;
+        function parseCSV(text) {
+            let rows = [];
+            let row = [''];
+            let insideQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                let nextC = text[i+1];
+                if (c === '"') {
+                    if (insideQuotes && nextC === '"') { row[row.length - 1] += '"'; i++; }
+                    else { insideQuotes = !insideQuotes; }
+                } else if (c === ',' && !insideQuotes) {
+                    row.push('');
+                } else if ((c === '\r' && nextC === '\n' || c === '\n') && !insideQuotes) {
+                    if (c === '\r') i++;
+                    rows.push(row);
+                    row = [''];
+                } else {
+                    row[row.length - 1] += c;
+                }
             }
-
-            listaPoemas.innerHTML = '';
-            // Invertimos para mostrar del más nuevo al más viejo
-            [...poemas].reverse().forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'poema-card';
-                card.innerHTML = `
-                    <button class="btn-borrar" onclick="borrarPoema(${p.fila})">Borrar</button>
-                    <h2>${escapeHtml(p.titulo)}</h2>
-                    <span class="fecha">${escapeHtml(p.fecha)}</span>
-                    <div class="contenido-poema">${escapeHtml(p.contenido)}</div>
-                `;
-                listaPoemas.appendChild(card);
-            });
+            if (row.length > 1 || row[0] !== '') rows.push(row);
+            return rows.slice(1);
         }
 
         function borrarPoema(fila) {
             const pass = prompt("Ingresa la contraseña para borrar este poema:");
             if (!pass) return;
 
-            const urlBorrar = `${SCRIPT_URL}?accion=borrar&fila=${fila}&pass=${encodeURIComponent(pass)}&callback=resultadoBorrar`;
-            
-            const scriptTag = document.createElement('script');
-            scriptTag.src = urlBorrar;
-            document.body.appendChild(scriptTag);
-        }
-
-        function resultadoBorrar(res) {
-            if (res === "OK_BORRADO") {
-                alert("Poema borrado con éxito.");
-                cargarPoemas();
-            } else {
-                alert("Contraseña incorrecta.");
-            }
+            const urlBorrar = `${SCRIPT_URL}?accion=borrar&fila=${fila}&pass=${encodeURIComponent(pass)}`;
+            fetch(urlBorrar)
+                .then(res => res.text())
+                .then(res => {
+                    if (res.trim() === "OK_BORRADO") {
+                        alert("Poema borrado con éxito.");
+                        setTimeout(cargarPoemas, 1000);
+                    } else {
+                        alert("Contraseña incorrecta.");
+                    }
+                });
         }
 
         function notificarEnvio() {
@@ -195,7 +215,6 @@
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // Cargar al abrir
         cargarPoemas();
     </script>
 </body>
