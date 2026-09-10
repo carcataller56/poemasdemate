@@ -89,13 +89,13 @@
         <!-- Formulario para que Mateo escriba -->
         <div class="form-box">
             <h2>Escribir un nuevo poema</h2>
-            <!-- Iframe oculto para procesar el envío sin recargar la página -->
-            <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(enviando){ recargarDespuesDeEnviar(); }"></iframe>
+            <!-- Iframe oculto que escucha cuando Google termina de guardar -->
+            <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
             
-            <form id="poemaForm" action="https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec" method="GET" target="hidden_iframe">
+            <form id="poemaForm" action="https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec" method="GET" target="hidden_iframe" onsubmit="activarEnvio()">
                 <input type="text" name="titulo" id="titulo" placeholder="Título del poema" required>
                 <textarea name="contenido" id="contenido" placeholder="Escribe tu poema aquí..." required></textarea>
-                <button type="submit" id="btnPublicar" onclick="activarEnvio()">Publicar Poema</button>
+                <button type="submit" id="btnPublicar">Publicar Poema</button>
             </form>
         </div>
 
@@ -107,14 +107,15 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec";
-
         const listaPoemas = document.getElementById('listaPoemas');
-        let enviando = false;
 
         async function cargarPoemas() {
             try {
-                const response = await fetch(SCRIPT_URL);
-                const poemas = await response.json();
+                // Usamos un servicio público libre de CORS para leer la hoja de cálculo sin bloqueos
+                const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(SCRIPT_URL);
+                const response = await fetch(proxyUrl);
+                const json = await response.json();
+                const poemas = JSON.parse(json.contents);
                 
                 if (poemas.length === 0) {
                     listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primero!</p>';
@@ -138,23 +139,17 @@
         }
 
         function activarEnvio() {
-            enviando = true;
             const btn = document.getElementById('btnPublicar');
             btn.textContent = 'Publicando...';
             btn.disabled = true;
-        }
 
-        function recargarDespuesDeEnviar() {
-            if (!enviando) return;
-            enviando = false;
-            
-            document.getElementById('poemaForm').reset();
-            const btn = document.getElementById('btnPublicar');
-            btn.textContent = 'Publicar Poema';
-            btn.disabled = false;
-            
-            // Esperar un segundo a que Google guarde y recargar los poemas en pantalla
-            setTimeout(cargarPoemas, 1500);
+            // Al cabo de 2 segundos, limpiamos el formulario y recargamos la lista
+            setTimeout(() => {
+                document.getElementById('poemaForm').reset();
+                btn.textContent = 'Publicar Poema';
+                btn.disabled = false;
+                cargarPoemas();
+            }, 2000);
         }
 
         function escapeHtml(text) {
