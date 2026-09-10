@@ -103,8 +103,8 @@
     </main>
 
     <script>
-        // URL de la aplicación web conectada a tu Google Sheets
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGlz_porSYm8D1xJcxT0u2Jnm1atuZzaSOSgS49BVUeDMrFWEN3ZgXRHY1nQhoqhY/exec";
+        // URL de la aplicación web conectada a Google Sheets a través de un proxy seguro
+        const SCRIPT_URL = "https://corsproxy.io/?https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN%2Fexec";
 
         const form = document.getElementById('poemaForm');
         const listaPoemas = document.getElementById('listaPoemas');
@@ -116,7 +116,7 @@
                 const poemas = await response.json();
                 
                 if (poemas.length === 0) {
-                    listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primeiro!</p>';
+                    listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primero!</p>';
                     return;
                 }
 
