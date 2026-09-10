@@ -35,6 +35,7 @@
             margin-bottom: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            position: relative;
         }
         input, textarea {
             width: 100%;
@@ -65,6 +66,7 @@
         .poema-card h2 {
             margin-top: 0;
             color: #4a403a;
+            padding-right: 70px;
         }
         .fecha {
             font-size: 0.85em;
@@ -76,6 +78,21 @@
             white-space: pre-line;
             font-size: 1.1em;
         }
+        .btn-borrar {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: #c0392b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .btn-borrar:hover {
+            background: #962d22;
+        }
     </style>
 </head>
 <body>
@@ -86,7 +103,7 @@
     </header>
 
     <main>
-        <!-- Formulario que envía directo a Google sin bloqueos -->
+        <!-- Formulario para que Mateo escriba -->
         <div class="form-box">
             <h2>Escribir un nuevo poema</h2>
             <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
@@ -108,14 +125,17 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec";
         const listaPoemas = document.getElementById('listaPoemas');
 
-        // Función que usa JSONP nativo para leer de Google sin sufrir bloqueos CORS
         function cargarPoemas() {
+            // Limpiamos etiquetas script anteriores si existen para evitar acumulación
+            const oldScript = document.getElementById('jsonpScript');
+            if (oldScript) oldScript.remove();
+
             const scriptTag = document.createElement('script');
-            scriptTag.src = SCRIPT_URL + "?callback=mostrarPoemas";
+            scriptTag.id = 'jsonpScript';
+            scriptTag.src = SCRIPT_URL + "?callback=mostrarPoemas&t=" + new Date().getTime();
             document.body.appendChild(scriptTag);
         }
 
-        // Google llamará a esta función automáticamente con los datos
         function mostrarPoemas(poemas) {
             if (!poemas || poemas.length === 0) {
                 listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primero!</p>';
@@ -123,16 +143,38 @@
             }
 
             listaPoemas.innerHTML = '';
-            poemas.reverse().forEach(p => {
+            // Invertimos para mostrar del más nuevo al más viejo
+            [...poemas].reverse().forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'poema-card';
                 card.innerHTML = `
+                    <button class="btn-borrar" onclick="borrarPoema(${p.fila})">Borrar</button>
                     <h2>${escapeHtml(p.titulo)}</h2>
                     <span class="fecha">${escapeHtml(p.fecha)}</span>
                     <div class="contenido-poema">${escapeHtml(p.contenido)}</div>
                 `;
                 listaPoemas.appendChild(card);
             });
+        }
+
+        function borrarPoema(fila) {
+            const pass = prompt("Ingresa la contraseña para borrar este poema:");
+            if (!pass) return;
+
+            const urlBorrar = `${SCRIPT_URL}?accion=borrar&fila=${fila}&pass=${encodeURIComponent(pass)}&callback=resultadoBorrar`;
+            
+            const scriptTag = document.createElement('script');
+            scriptTag.src = urlBorrar;
+            document.body.appendChild(scriptTag);
+        }
+
+        function resultadoBorrar(res) {
+            if (res === "OK_BORRADO") {
+                alert("Poema borrado con éxito.");
+                cargarPoemas();
+            } else {
+                alert("Contraseña incorrecta.");
+            }
         }
 
         function notificarEnvio() {
@@ -144,7 +186,7 @@
                 document.getElementById('poemaForm').reset();
                 btn.textContent = 'Publicar Poema';
                 btn.disabled = false;
-                cargarPoemas(); // Recargar la lista
+                cargarPoemas();
             }, 2000);
         }
 
