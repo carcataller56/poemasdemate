@@ -86,13 +86,12 @@
     </header>
 
     <main>
-        <!-- Formulario para que Mateo escriba -->
+        <!-- Formulario que envía directo a Google sin bloqueos -->
         <div class="form-box">
             <h2>Escribir un nuevo poema</h2>
-            <!-- Iframe oculto que escucha cuando Google termina de guardar -->
             <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
             
-            <form id="poemaForm" action="https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec" method="GET" target="hidden_iframe" onsubmit="activarEnvio()">
+            <form id="poemaForm" action="https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec" method="GET" target="hidden_iframe" onsubmit="notificarEnvio()">
                 <input type="text" name="titulo" id="titulo" placeholder="Título del poema" required>
                 <textarea name="contenido" id="contenido" placeholder="Escribe tu poema aquí..." required></textarea>
                 <button type="submit" id="btnPublicar">Publicar Poema</button>
@@ -101,7 +100,7 @@
 
         <!-- Listado donde se cargarán los poemas -->
         <div id="listaPoemas">
-            <p style="text-align: center; color: #777;">Cargando poemas...</p>
+            <p style="text-align: center; color: #777;">Cargando poemas desde Google Sheets...</p>
         </div>
     </main>
 
@@ -109,46 +108,43 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec";
         const listaPoemas = document.getElementById('listaPoemas');
 
-        async function cargarPoemas() {
-            try {
-                // Usamos un servicio público libre de CORS para leer la hoja de cálculo sin bloqueos
-                const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(SCRIPT_URL);
-                const response = await fetch(proxyUrl);
-                const json = await response.json();
-                const poemas = JSON.parse(json.contents);
-                
-                if (poemas.length === 0) {
-                    listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primero!</p>';
-                    return;
-                }
-
-                listaPoemas.innerHTML = '';
-                poemas.reverse().forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = 'poema-card';
-                    card.innerHTML = `
-                        <h2>${escapeHtml(p.titulo)}</h2>
-                        <span class="fecha">${escapeHtml(p.fecha)}</span>
-                        <div class="contenido-poema">${escapeHtml(p.contenido)}</div>
-                    `;
-                    listaPoemas.appendChild(card);
-                });
-            } catch (error) {
-                listaPoemas.innerHTML = '<p style="text-align: center; color: #c0392b;">Error al conectar con la base de datos.</p>';
-            }
+        // Función que usa JSONP nativo para leer de Google sin sufrir bloqueos CORS
+        function cargarPoemas() {
+            const scriptTag = document.createElement('script');
+            scriptTag.src = SCRIPT_URL + "?callback=mostrarPoemas";
+            document.body.appendChild(scriptTag);
         }
 
-        function activarEnvio() {
+        // Google llamará a esta función automáticamente con los datos
+        function mostrarPoemas(poemas) {
+            if (!poemas || poemas.length === 0) {
+                listaPoemas.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay poemas guardados. ¡Escribe el primero!</p>';
+                return;
+            }
+
+            listaPoemas.innerHTML = '';
+            poemas.reverse().forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'poema-card';
+                card.innerHTML = `
+                    <h2>${escapeHtml(p.titulo)}</h2>
+                    <span class="fecha">${escapeHtml(p.fecha)}</span>
+                    <div class="contenido-poema">${escapeHtml(p.contenido)}</div>
+                `;
+                listaPoemas.appendChild(card);
+            });
+        }
+
+        function notificarEnvio() {
             const btn = document.getElementById('btnPublicar');
-            btn.textContent = 'Publicando...';
+            btn.textContent = '¡Publicado con éxito!';
             btn.disabled = true;
 
-            // Al cabo de 2 segundos, limpiamos el formulario y recargamos la lista
             setTimeout(() => {
                 document.getElementById('poemaForm').reset();
                 btn.textContent = 'Publicar Poema';
                 btn.disabled = false;
-                cargarPoemas();
+                cargarPoemas(); // Recargar la lista
             }, 2000);
         }
 
@@ -157,7 +153,7 @@
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // Cargar poemas al abrir la página
+        // Cargar al abrir
         cargarPoemas();
     </script>
 </body>
