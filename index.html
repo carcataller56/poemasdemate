@@ -86,30 +86,31 @@
     </header>
 
     <main>
-        <!-- Formulario para que Mateo escriba desde cualquier dispositivo -->
+        <!-- Formulario para que Mateo escriba -->
         <div class="form-box">
             <h2>Escribir un nuevo poema</h2>
-            <form id="poemaForm">
-                <input type="text" id="titulo" placeholder="Título del poema" required>
-                <textarea id="contenido" placeholder="Escribe tu poema aquí..." required></textarea>
-                <button type="submit" id="btnPublicar">Publicar Poema</button>
+            <!-- Iframe oculto para procesar el envío sin recargar la página -->
+            <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(enviando){ recargarDespuesDeEnviar(); }"></iframe>
+            
+            <form id="poemaForm" action="https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec" method="GET" target="hidden_iframe">
+                <input type="text" name="titulo" id="titulo" placeholder="Título del poema" required>
+                <textarea name="contenido" id="contenido" placeholder="Escribe tu poema aquí..." required></textarea>
+                <button type="submit" id="btnPublicar" onclick="activarEnvio()">Publicar Poema</button>
             </form>
         </div>
 
-        <!-- Listado donde se cargarán los poemas automáticamente -->
+        <!-- Listado donde se cargarán los poemas -->
         <div id="listaPoemas">
             <p style="text-align: center; color: #777;">Cargando poemas...</p>
         </div>
     </main>
 
     <script>
-        // URL de la aplicación web conectada a Google Sheets a través de un proxy seguro
-        const SCRIPT_URL = "https://corsproxy.io/?https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN%2Fexec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec";
 
-        const form = document.getElementById('poemaForm');
         const listaPoemas = document.getElementById('listaPoemas');
+        let enviando = false;
 
-        // Cargar poemas al abrir la página
         async function cargarPoemas() {
             try {
                 const response = await fetch(SCRIPT_URL);
@@ -121,7 +122,6 @@
                 }
 
                 listaPoemas.innerHTML = '';
-                // Mostrar del más nuevo al más viejo invirtiendo el array
                 poemas.reverse().forEach(p => {
                     const card = document.createElement('div');
                     card.className = 'poema-card';
@@ -137,41 +137,32 @@
             }
         }
 
-        // Enviar nuevo poema
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        function activarEnvio() {
+            enviando = true;
             const btn = document.getElementById('btnPublicar');
             btn.textContent = 'Publicando...';
             btn.disabled = true;
+        }
 
-            const nuevoPoema = {
-                titulo: document.getElementById('titulo').value,
-                contenido: document.getElementById('contenido').value
-            };
-
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(nuevoPoema)
-                });
-                
-                form.reset();
-                btn.textContent = 'Publicar Poema';
-                btn.disabled = false;
-                cargarPoemas(); // Recargar la lista automáticamente
-            } catch (error) {
-                alert('Hubo un error al publicar el poema.');
-                btn.textContent = 'Publicar Poema';
-                btn.disabled = false;
-            }
-        });
+        function recargarDespuesDeEnviar() {
+            if (!enviando) return;
+            enviando = false;
+            
+            document.getElementById('poemaForm').reset();
+            const btn = document.getElementById('btnPublicar');
+            btn.textContent = 'Publicar Poema';
+            btn.disabled = false;
+            
+            // Esperar un segundo a que Google guarde y recargar los poemas en pantalla
+            setTimeout(cargarPoemas, 1500);
+        }
 
         function escapeHtml(text) {
             if (!text) return '';
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // Ejecutar al cargar la página
+        // Cargar poemas al abrir la página
         cargarPoemas();
     </script>
 </body>
