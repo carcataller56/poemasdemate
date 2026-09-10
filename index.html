@@ -165,30 +165,13 @@
         }
 
         .poema-card h2 {
-            margin: 0;
+            margin: 0 0 20px 0;
             padding-right: 90px;
             color: #24262b;
             font-family: Georgia, "Times New Roman", serif;
             font-size: clamp(1.5rem, 3vw, 2rem);
             line-height: 1.25;
             font-weight: 600;
-        }
-
-        .autor-etiqueta {
-            display: inline-block;
-            margin-top: 6px;
-            color: var(--principal);
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .fecha {
-            display: block;
-            margin-top: 4px;
-            margin-bottom: 25px;
-            color: #9ca3af;
-            font-size: 0.82rem;
-            letter-spacing: 0.4px;
         }
 
         .contenido-poema {
@@ -200,6 +183,24 @@
             line-height: 1.9;
             white-space: pre-wrap;
             overflow-wrap: break-word;
+            margin-bottom: 25px;
+            border-left: 3px solid #e0e7ff;
+            padding-left: 15px;
+        }
+
+        .pie-poema {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f3f5;
+            padding-top: 15px;
+            font-size: 0.85em;
+            color: var(--texto-suave);
+        }
+
+        .autor-etiqueta {
+            font-weight: 600;
+            color: var(--principal);
         }
 
         .btn-borrar {
@@ -243,6 +244,7 @@
             .form-box { padding: 22px 18px; }
             .poema-card { padding: 24px 20px; }
             .poema-card h2 { padding-right: 70px; font-size: 1.45rem; }
+            .pie-poema { flex-direction: column; align-items: flex-start; gap: 5px; }
         }
     </style>
 </head>
@@ -298,7 +300,6 @@
                     if (!p || !p[2]) return;
                     const filaRealSheet = filas.length - indexReal + 1;
                     
-                    // Orden en el CSV de Google: p[0] = Fecha/Hora, p[1] = Autor, p[2] = Título, p[3] = Contenido
                     const fechaHora = p[0] || '';
                     const autor = p[1] || 'Mateo';
                     const titulo = p[2] || '';
@@ -309,9 +310,11 @@
                     card.innerHTML = `
                         <button class="btn-borrar" onclick="borrarPoema(${filaRealSheet})">Borrar</button>
                         <h2>${escapeHtml(titulo)}</h2>
-                        <span class="autor-etiqueta">Por: ${escapeHtml(autor)}</span>
-                        <span class="fecha">Publicado el ${escapeHtml(fechaHora)}</span>
                         <div class="contenido-poema">${escapeHtml(contenido)}</div>
+                        <div class="pie-poema">
+                            <span class="autor-etiqueta">Por: ${escapeHtml(autor)}</span>
+                            <span class="fecha">${escapeHtml(fechaHora)}</span>
+                        </div>
                     `;
                     listaPoemas.appendChild(card);
                 });
