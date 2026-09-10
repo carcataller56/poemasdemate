@@ -174,9 +174,17 @@
             font-weight: 600;
         }
 
+        .autor-etiqueta {
+            display: inline-block;
+            margin-top: 6px;
+            color: var(--principal);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
         .fecha {
             display: block;
-            margin-top: 9px;
+            margin-top: 4px;
             margin-bottom: 25px;
             color: #9ca3af;
             font-size: 0.82rem;
@@ -251,6 +259,7 @@
             <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
             
             <form id="poemaForm" action="https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec" method="GET" target="hidden_iframe" onsubmit="notificarEnvio()">
+                <input type="text" name="autor" id="autor" placeholder="Autor (ej. Mateo)" required>
                 <input type="text" name="titulo" id="titulo" placeholder="Título del poema" required>
                 <textarea name="contenido" id="contenido" placeholder="Escribe tu poema aquí..." required></textarea>
                 <button type="submit" id="btnPublicar">Publicar poema</button>
@@ -274,7 +283,7 @@
                 const dataText = await response.text();
                 const filas = parseCSV(dataText);
 
-                if (filas.length === 0 || (filas.length === 1 && !filas[0][1])) {
+                if (filas.length === 0 || (filas.length === 1 && !filas[0][2])) {
                     listaPoemas.innerHTML = `
                         <div class="mensaje">
                             Aún no hay poemas guardados.<br>
@@ -286,16 +295,23 @@
 
                 listaPoemas.innerHTML = '';
                 [...filas].reverse().forEach((p, indexReal) => {
-                    if (!p || !p[1]) return;
+                    if (!p || !p[2]) return;
                     const filaRealSheet = filas.length - indexReal + 1;
                     
+                    // Orden en el CSV de Google: p[0] = Fecha/Hora, p[1] = Autor, p[2] = Título, p[3] = Contenido
+                    const fechaHora = p[0] || '';
+                    const autor = p[1] || 'Mateo';
+                    const titulo = p[2] || '';
+                    const contenido = p[3] || '';
+
                     const card = document.createElement('div');
                     card.className = 'poema-card';
                     card.innerHTML = `
                         <button class="btn-borrar" onclick="borrarPoema(${filaRealSheet})">Borrar</button>
-                        <h2>${escapeHtml(p[1])}</h2>
-                        <span class="fecha">${escapeHtml(p[0])}</span>
-                        <div class="contenido-poema">${escapeHtml(p[2])}</div>
+                        <h2>${escapeHtml(titulo)}</h2>
+                        <span class="autor-etiqueta">Por: ${escapeHtml(autor)}</span>
+                        <span class="fecha">Publicado el ${escapeHtml(fechaHora)}</span>
+                        <div class="contenido-poema">${escapeHtml(contenido)}</div>
                     `;
                     listaPoemas.appendChild(card);
                 });
@@ -308,7 +324,6 @@
             }
         }
 
-        // Lector robusto de CSV que respeta saltos de línea largos dentro de comillas
         function parseCSV(text) {
             let rows = [];
             let row = [''];
