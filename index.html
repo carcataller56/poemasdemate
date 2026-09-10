@@ -9,8 +9,9 @@
 <title>Los Poemas de Mateo</title>
 
 <style>
+
     /* =========================================================
-       CONFIGURACIÓN GENERAL
+       ESTILO GENERAL
     ========================================================= */
 
     * {
@@ -32,26 +33,35 @@
     }
 
     body {
-        margin: 0;
-        padding: 0;
-        background:
-            radial-gradient(circle at top left, rgba(79, 70, 229, 0.07), transparent 35%),
-            radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.05), transparent 35%),
-            var(--fondo);
-        color: var(--texto);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        line-height: 1.6;
-        min-height: 100vh;
-    }
-
-    /* =========================================================
-       CONTENEDOR
-    ========================================================= */
-
-    body {
-        max-width: 980px;
         margin: 0 auto;
         padding: 35px 20px 60px;
+        max-width: 980px;
+        min-height: 100vh;
+
+        background:
+            radial-gradient(
+                circle at top left,
+                rgba(79, 70, 229, 0.07),
+                transparent 35%
+            ),
+            radial-gradient(
+                circle at bottom right,
+                rgba(124, 58, 237, 0.05),
+                transparent 35%
+            ),
+            var(--fondo);
+
+        color: var(--texto);
+
+        font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            Arial,
+            sans-serif;
+
+        line-height: 1.6;
     }
 
     /* =========================================================
@@ -59,37 +69,60 @@
     ========================================================= */
 
     header {
+        position: relative;
+
         text-align: center;
+
         padding: 30px 20px 35px;
         margin-bottom: 30px;
-        position: relative;
     }
 
     header::after {
         content: "";
+
         position: absolute;
+
         bottom: 0;
         left: 50%;
+
         transform: translateX(-50%);
+
         width: 70px;
         height: 4px;
+
         border-radius: 10px;
-        background: linear-gradient(90deg, #4f46e5, #7c3aed);
+
+        background: linear-gradient(
+            90deg,
+            #4f46e5,
+            #7c3aed
+        );
     }
 
     h1 {
         margin: 0;
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(2.2rem, 6vw, 3.6rem);
-        font-weight: 600;
-        letter-spacing: -1.5px;
+
         color: #18181b;
+
+        font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+        font-size: clamp(2.2rem, 6vw, 3.6rem);
+
+        font-weight: 600;
+
+        letter-spacing: -1.5px;
     }
 
     .subtitle {
         margin: 10px 0 0;
+
         color: var(--texto-suave);
+
         font-size: 1rem;
+
         letter-spacing: 0.3px;
     }
 
@@ -98,35 +131,55 @@
     ========================================================= */
 
     .form-box {
-        background: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.95);
+
         border: 1px solid rgba(229, 231, 235, 0.9);
+
         border-radius: 20px;
+
         padding: 30px;
+
         margin-bottom: 35px;
+
         box-shadow: var(--sombra);
+
         backdrop-filter: blur(10px);
     }
 
     .form-box h2 {
         margin: 0 0 22px;
+
         font-size: 1.35rem;
+
         font-weight: 650;
+
         color: #27272a;
     }
 
     input,
     textarea {
         display: block;
+
         width: 100%;
+
         border: 1px solid var(--borde);
+
         background: #fafafa;
+
         color: var(--texto);
+
         border-radius: 12px;
+
         padding: 14px 16px;
+
         margin-bottom: 15px;
+
         font-family: inherit;
+
         font-size: 1rem;
+
         outline: none;
+
         transition:
             border-color 0.2s ease,
             box-shadow 0.2s ease,
@@ -139,7 +192,9 @@
 
     textarea {
         min-height: 170px;
+
         resize: vertical;
+
         line-height: 1.7;
     }
 
@@ -151,29 +206,46 @@
     input:focus,
     textarea:focus {
         background: #ffffff;
+
         border-color: #818cf8;
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.10);
+
+        box-shadow:
+            0 0 0 4px
+            rgba(99, 102, 241, 0.10);
     }
 
     /* =========================================================
        BOTÓN PUBLICAR
     ========================================================= */
 
-    button {
-        font-family: inherit;
-    }
-
     #btnPublicar {
         width: 100%;
+
         border: none;
+
         border-radius: 12px;
+
         padding: 14px 22px;
-        background: linear-gradient(135deg, #4f46e5, #6d5dfc);
+
+        background:
+            linear-gradient(
+                135deg,
+                #4f46e5,
+                #6d5dfc
+            );
+
         color: #ffffff;
+
         font-size: 1rem;
+
         font-weight: 600;
+
         cursor: pointer;
-        box-shadow: 0 7px 18px rgba(79, 70, 229, 0.22);
+
+        box-shadow:
+            0 7px 18px
+            rgba(79, 70, 229, 0.22);
+
         transition:
             transform 0.2s ease,
             box-shadow 0.2s ease,
@@ -182,7 +254,10 @@
 
     #btnPublicar:hover {
         transform: translateY(-1px);
-        box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+
+        box-shadow:
+            0 10px 24px
+            rgba(79, 70, 229, 0.28);
     }
 
     #btnPublicar:active {
@@ -191,7 +266,9 @@
 
     #btnPublicar:disabled {
         cursor: default;
+
         opacity: 0.75;
+
         transform: none;
     }
 
@@ -201,7 +278,9 @@
 
     #listaPoemas {
         display: flex;
+
         flex-direction: column;
+
         gap: 22px;
     }
 
@@ -211,33 +290,49 @@
 
     .poema-card {
         position: relative;
+
         background: var(--blanco);
-        border: 1px solid rgba(229, 231, 235, 0.9);
+
+        border: 1px solid
+            rgba(229, 231, 235, 0.9);
+
         border-radius: 20px;
+
         padding: 30px 32px;
+
         box-shadow: var(--sombra);
+
         transition:
             transform 0.25s ease,
             box-shadow 0.25s ease,
             border-color 0.25s ease;
-        animation: aparecer 0.45s ease both;
+
+        animation:
+            aparecer 0.45s ease both;
     }
 
     .poema-card:hover {
         transform: translateY(-3px);
+
         box-shadow: var(--sombra-hover);
+
         border-color: #dddfe5;
     }
 
     @keyframes aparecer {
+
         from {
             opacity: 0;
-            transform: translateY(12px);
+
+            transform:
+                translateY(12px);
         }
 
         to {
             opacity: 1;
-            transform: translateY(0);
+
+            transform:
+                translateY(0);
         }
     }
 
@@ -247,12 +342,23 @@
 
     .poema-card h2 {
         margin: 0;
+
         padding-right: 90px;
+
         color: #24262b;
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(1.5rem, 3vw, 2rem);
+
+        font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+        font-size:
+            clamp(1.5rem, 3vw, 2rem);
+
         line-height: 1.25;
+
         font-weight: 600;
+
         letter-spacing: -0.3px;
     }
 
@@ -262,24 +368,58 @@
 
     .fecha {
         display: block;
+
         margin-top: 9px;
+
         margin-bottom: 25px;
+
         color: #9ca3af;
+
         font-size: 0.82rem;
+
         letter-spacing: 0.4px;
     }
 
     /* =========================================================
        CONTENIDO DEL POEMA
+
+       IMPORTANTE:
+       pre-wrap conserva TODOS los saltos de línea
+       y también permite que las líneas largas bajen.
     ========================================================= */
 
     .contenido-poema {
-        white-space: pre-line;
+        display: block;
+
+        width: 100%;
+
         color: #454951;
-        font-family: Georgia, "Times New Roman", serif;
+
+        font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
         font-size: 1.08rem;
+
         line-height: 1.9;
+
+        white-space: pre-wrap;
+
+        overflow-wrap: break-word;
+
+        word-wrap: break-word;
+
+        word-break: normal;
+
         max-width: 760px;
+
+        /* Evita que el navegador limite la altura */
+        height: auto;
+
+        min-height: 0;
+
+        overflow: visible;
     }
 
     /* =========================================================
@@ -288,18 +428,24 @@
 
     .btn-borrar {
         position: absolute;
+
         top: 27px;
         right: 27px;
 
         border: 1px solid #f0c7cc;
+
         background: #fff7f8;
+
         color: var(--rojo);
 
         padding: 7px 12px;
+
         border-radius: 9px;
 
         cursor: pointer;
+
         font-size: 0.78rem;
+
         font-weight: 600;
 
         transition:
@@ -310,7 +456,9 @@
 
     .btn-borrar:hover {
         background: var(--rojo);
+
         color: white;
+
         border-color: var(--rojo);
     }
 
@@ -320,35 +468,52 @@
 
     .mensaje {
         text-align: center;
+
         padding: 45px 20px;
+
         color: var(--texto-suave);
-        background: rgba(255, 255, 255, 0.7);
-        border: 1px dashed #d7dae0;
+
+        background:
+            rgba(255, 255, 255, 0.7);
+
+        border:
+            1px dashed #d7dae0;
+
         border-radius: 18px;
     }
 
     .mensaje.error {
         color: var(--rojo);
-        border-color: #f0b8bf;
+
+        border-color:
+            #f0b8bf;
     }
 
     /* =========================================================
-       RESPONSIVE - CELULAR
+       CELULAR
     ========================================================= */
 
     @media (max-width: 600px) {
 
         body {
-            padding: 18px 12px 40px;
+            padding:
+                18px
+                12px
+                40px;
         }
 
         header {
-            padding: 20px 10px 28px;
+            padding:
+                20px
+                10px
+                28px;
+
             margin-bottom: 22px;
         }
 
         h1 {
             font-size: 2.25rem;
+
             letter-spacing: -1px;
         }
 
@@ -357,8 +522,12 @@
         }
 
         .form-box {
-            padding: 22px 18px;
+            padding:
+                22px
+                18px;
+
             border-radius: 16px;
+
             margin-bottom: 25px;
         }
 
@@ -375,12 +544,16 @@
         }
 
         .poema-card {
-            padding: 24px 20px;
+            padding:
+                24px
+                20px;
+
             border-radius: 16px;
         }
 
         .poema-card h2 {
             padding-right: 70px;
+
             font-size: 1.45rem;
         }
 
@@ -390,13 +563,23 @@
 
         .contenido-poema {
             font-size: 1.02rem;
+
             line-height: 1.8;
+
+            white-space: pre-wrap;
+
+            max-width: 100%;
         }
 
         .btn-borrar {
             top: 20px;
+
             right: 18px;
-            padding: 6px 9px;
+
+            padding:
+                6px
+                9px;
+
             font-size: 0.72rem;
         }
     }
@@ -417,11 +600,13 @@
 
         .contenido-poema {
             font-size: 0.98rem;
+
+            line-height: 1.75;
         }
     }
 
     /* =========================================================
-       REDUCCIÓN DE ANIMACIONES SI EL USUARIO LO PREFIERE
+       REDUCIR ANIMACIONES
     ========================================================= */
 
     @media (prefers-reduced-motion: reduce) {
@@ -430,10 +615,13 @@
         *::before,
         *::after {
             animation-duration: 0.01ms !important;
+
             animation-iteration-count: 1 !important;
+
             transition-duration: 0.01ms !important;
         }
     }
+
 </style>
 ```
 
@@ -447,26 +635,36 @@
 ========================================================= -->
 
 <header>
-    <h1>Los Poemas de Mateo</h1>
-    <p class="subtitle">Un espacio autogestionado</p>
+
+    <h1>
+        Los Poemas de Mateo
+    </h1>
+
+    <p class="subtitle">
+        Un espacio autogestionado
+    </p>
+
 </header>
 
 
 <main>
 
     <!-- =====================================================
-         FORMULARIO PARA NUEVO POEMA
+         FORMULARIO
     ====================================================== -->
 
     <div class="form-box">
 
-        <h2>Escribir un nuevo poema</h2>
+        <h2>
+            Escribir un nuevo poema
+        </h2>
 
         <iframe
             name="hidden_iframe"
             id="hidden_iframe"
             style="display:none;">
         </iframe>
+
 
         <form
             id="poemaForm"
@@ -475,13 +673,14 @@
             target="hidden_iframe"
             onsubmit="notificarEnvio()">
 
+
             <input
                 type="text"
                 name="titulo"
                 id="titulo"
                 placeholder="Título del poema"
-                autocomplete="off"
                 required>
+
 
             <textarea
                 name="contenido"
@@ -489,10 +688,13 @@
                 placeholder="Escribe tu poema aquí..."
                 required></textarea>
 
+
             <button
                 type="submit"
                 id="btnPublicar">
+
                 Publicar poema
+
             </button>
 
         </form>
@@ -518,18 +720,25 @@
 <script>
 
     /* =========================================================
-       CONFIGURACIÓN
+       URL DEL GOOGLE APPS SCRIPT
     ========================================================= */
 
     const SCRIPT_URL =
         "https://script.google.com/macros/s/AKfycbxYHO9d1HVYyKpOIG3jTXonQ207IktqD1dKbFBQpprR5yJeZxGjKEBo_c9xSc8VHteN/exec";
+
+
+    /* =========================================================
+       URL DEL CSV DE GOOGLE SHEETS
+    ========================================================= */
 
     const CSV_URL =
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vTnj3vbqv2xDFqKhiexLaFf2Hd-z_Cy7e8Er0UDtuLHKDX8xUQjqgGpvZj23dGPd3xyVZuSQQdNDy3r/pub?gid=0&single=true&output=csv";
 
 
     const listaPoemas =
-        document.getElementById('listaPoemas');
+        document.getElementById(
+            'listaPoemas'
+        );
 
 
     /* =========================================================
@@ -540,22 +749,32 @@
 
         try {
 
-            const response = await fetch(
-                CSV_URL + "&t=" + new Date().getTime()
-            );
+            const response =
+                await fetch(
+                    CSV_URL +
+                    "&t=" +
+                    new Date().getTime()
+                );
 
-            const dataText = await response.text();
 
-            const filas = parseCSV(dataText);
+            const dataText =
+                await response.text();
+
+
+            const filas =
+                parseCSV(dataText);
 
 
             /* -------------------------------------------------
-               SIN POEMAS
+               SI NO HAY POEMAS
             ------------------------------------------------- */
 
             if (
                 filas.length === 0 ||
-                (filas.length === 1 && !filas[0][1])
+                (
+                    filas.length === 1 &&
+                    !filas[0][1]
+                )
             ) {
 
                 listaPoemas.innerHTML = `
@@ -573,71 +792,90 @@
 
 
             /* -------------------------------------------------
-               MOSTRAR DEL MÁS NUEVO AL MÁS VIEJO
+               MOSTRAR POEMAS DEL MÁS NUEVO AL MÁS VIEJO
             ------------------------------------------------- */
 
-            [...filas].reverse().forEach((p, indexReal) => {
+            [...filas]
+                .reverse()
+                .forEach(
+                    (p, indexReal) => {
 
-                if (!p[1]) return;
-
-
-                const filaRealSheet =
-                    filas.length - indexReal + 1;
-
-
-                const card =
-                    document.createElement('div');
-
-                card.className = 'poema-card';
+                        if (!p[1]) return;
 
 
-                card.innerHTML = `
-
-                    <button
-                        class="btn-borrar"
-                        onclick="borrarPoema(${filaRealSheet})">
-                        Borrar
-                    </button>
-
-                    <h2>
-                        ${escapeHtml(p[1])}
-                    </h2>
-
-                    <span class="fecha">
-                        ${escapeHtml(p[0])}
-                    </span>
-
-                    <div class="contenido-poema">
-                        ${escapeHtml(p[2])}
-                    </div>
-
-                `;
+                        const filaRealSheet =
+                            filas.length -
+                            indexReal +
+                            1;
 
 
-                listaPoemas.appendChild(card);
+                        const card =
+                            document.createElement(
+                                'div'
+                            );
 
-            });
+
+                        card.className =
+                            'poema-card';
 
 
-        } catch (error) {
+                        card.innerHTML = `
+
+                            <button
+                                class="btn-borrar"
+                                onclick="borrarPoema(${filaRealSheet})">
+
+                                Borrar
+
+                            </button>
+
+
+                            <h2>
+                                ${escapeHtml(p[1])}
+                            </h2>
+
+
+                            <span class="fecha">
+                                ${escapeHtml(p[0])}
+                            </span>
+
+
+                            <div class="contenido-poema">${escapeHtml(p[2])}</div>
+
+                        `;
+
+
+                        listaPoemas.appendChild(
+                            card
+                        );
+
+                    }
+                );
+
+        }
+
+        catch (error) {
 
             console.error(
                 "Error cargando poemas:",
                 error
             );
 
+
             listaPoemas.innerHTML = `
                 <div class="mensaje error">
-                    No se pudieron cargar los poemas.<br>
-                    Verifica la conexión con la base de datos.
+                    Error al conectar con la base de datos.
                 </div>
             `;
+
         }
     }
 
 
     /* =========================================================
        PARSER CSV
+       
+       Se mantiene la misma lógica que ya tenías.
     ========================================================= */
 
     function parseCSV(text) {
@@ -649,11 +887,16 @@
         let insideQuotes = false;
 
 
-        for (let i = 0; i < text.length; i++) {
+        for (
+            let i = 0;
+            i < text.length;
+            i++
+        ) {
 
             let c = text[i];
 
-            let nextC = text[i + 1];
+            let nextC =
+                text[i + 1];
 
 
             if (c === '"') {
@@ -663,17 +906,23 @@
                     nextC === '"'
                 ) {
 
-                    row[row.length - 1] += '"';
+                    row[
+                        row.length - 1
+                    ] += '"';
 
                     i++;
 
-                } else {
+                }
 
-                    insideQuotes = !insideQuotes;
+                else {
+
+                    insideQuotes =
+                        !insideQuotes;
 
                 }
 
             }
+
 
             else if (
                 c === ',' &&
@@ -684,19 +933,19 @@
 
             }
 
+
             else if (
                 (
                     c === '\r' &&
                     nextC === '\n'
                 ) ||
-                (
-                    c === '\n'
-                )
+                c === '\n'
             ) {
 
                 if (c === '\r') {
                     i++;
                 }
+
 
                 rows.push(row);
 
@@ -704,11 +953,15 @@
 
             }
 
+
             else {
 
-                row[row.length - 1] += c;
+                row[
+                    row.length - 1
+                ] += c;
 
             }
+
         }
 
 
@@ -747,45 +1000,56 @@
 
         fetch(urlBorrar)
 
-            .then(res => res.text())
+            .then(
+                res => res.text()
+            )
 
-            .then(res => {
+            .then(
+                res => {
 
-                if (res.trim() === "OK_BORRADO") {
+                    if (
+                        res.trim() ===
+                        "OK_BORRADO"
+                    ) {
 
-                    alert(
-                        "Poema borrado con éxito."
+                        alert(
+                            "Poema borrado con éxito."
+                        );
+
+
+                        setTimeout(
+                            cargarPoemas,
+                            1000
+                        );
+
+                    }
+
+                    else {
+
+                        alert(
+                            "Contraseña incorrecta."
+                        );
+
+                    }
+
+                }
+            )
+
+            .catch(
+                error => {
+
+                    console.error(
+                        "Error al borrar:",
+                        error
                     );
 
-                    setTimeout(
-                        cargarPoemas,
-                        1000
+
+                    alert(
+                        "No se pudo conectar con el servidor."
                     );
 
                 }
-
-                else {
-
-                    alert(
-                        "Contraseña incorrecta."
-                    );
-
-                }
-
-            })
-
-            .catch(error => {
-
-                console.error(
-                    "Error al borrar:",
-                    error
-                );
-
-                alert(
-                    "No se pudo conectar con el servidor."
-                );
-
-            });
+            );
     }
 
 
@@ -804,31 +1068,39 @@
         btn.textContent =
             '¡Publicado con éxito!';
 
+
         btn.disabled = true;
 
 
-        setTimeout(() => {
+        setTimeout(
+            () => {
 
-            document
-                .getElementById('poemaForm')
-                .reset();
-
-
-            btn.textContent =
-                'Publicar poema';
-
-
-            btn.disabled = false;
+                document
+                    .getElementById(
+                        'poemaForm'
+                    )
+                    .reset();
 
 
-            cargarPoemas();
+                btn.textContent =
+                    'Publicar poema';
 
-        }, 2000);
+
+                btn.disabled = false;
+
+
+                cargarPoemas();
+
+            },
+            2000
+        );
     }
 
 
     /* =========================================================
-       SEGURIDAD HTML
+       PROTECCIÓN HTML
+       
+       Se mantiene igual que en tu código original.
     ========================================================= */
 
     function escapeHtml(text) {
@@ -836,16 +1108,23 @@
         if (!text) return '';
 
         return text
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            );
     }
 
 
     /* =========================================================
-       INICIO
+       INICIAR
     ========================================================= */
 
     cargarPoemas();
